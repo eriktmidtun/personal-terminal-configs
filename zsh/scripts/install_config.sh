@@ -1,7 +1,5 @@
 # !/bin/bash
 
-set -eu -o pipefail # fail on error and report it, debug all lines
-
 sudo -n true
 test $? -eq 0 || exit 1 "you should have sudo privilege to run this script"
 
@@ -16,15 +14,26 @@ if [ "" = "$PKG_OK" ]; then
   sudo apt-get --yes install $REQUIRED_PKG
 fi
 
+parent_path="$(cd -P "$(dirname "${filename}")/..";pwd)"
+echo parent_path $parent_path
+ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
+
 #install oh-my-zsh
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-cp zsh/.zshrc ~/.zshrc
+if [ ! -d "${HOME}/.oh-my-zsh" ]; then
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+if [ ! -d "${ZSH_CUSTOM}/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
+fi
+cp $parent_path/.zshrc ~/.zshrc
 
 #install power10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-cp zsh/.p10k.zsh ~/.p10k.zsh
-
+if [ ! -d "${ZSH_CUSTOM}/themes/powerlevel10k" ]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git $ZSH_CUSTOM/themes/powerlevel10k
+fi
+cp $parent_path/.p10k.zsh ~/.p10k.zsh
+ 
 # Change default shell to zsh for the current user
-sudo chsh -s $REQUIRED_PKG $USER
-exec zsh
+sudo usermod --shell $(which zsh) $USER
+
+sudo -u $USER zsh
