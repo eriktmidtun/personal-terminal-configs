@@ -23,7 +23,7 @@ if [ ! -d "${HOME}/.oh-my-zsh" ]; then
   sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 if [ ! -d "${ZSH_CUSTOM}/plugins/zsh-autosuggestions" ]; then
-  git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
+  git clone https://github.com/zsh-users/zsh-autosuggestion.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
 fi
 cp $parent_path/.zshrc ~/.zshrc
 
